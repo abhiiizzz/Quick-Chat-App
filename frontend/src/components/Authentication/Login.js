@@ -41,7 +41,7 @@ const Login = () => {
       };
 
       const { data } = await axios.post(
-        "/api/user/login",
+        "ap/api/user/login",
         { email, password },
         config
       );
@@ -59,15 +59,30 @@ const Login = () => {
       setLoading(false);
       history.push("/chats");
     } catch (error) {
-      toast({
-        title: "Error Occured!",
-        description: error.response.data.message,
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-        position: "bottom",
-      });
       setLoading(false);
+
+      // Check for rate-limiting error
+      if (error.response && error.response.status === 429) {
+        toast({
+          title: "Too Many Requests",
+          description:
+            "You have exceeded the number of login attempts. Please try again later.",
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+          position: "bottom",
+        });
+      } else {
+        toast({
+          title: "Error Occurred!",
+          description:
+            error.response?.data?.message || "An unexpected error occurred.",
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+          position: "bottom",
+        });
+      }
     }
   };
 

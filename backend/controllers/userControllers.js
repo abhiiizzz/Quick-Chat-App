@@ -1,22 +1,53 @@
 const asyncHandler = require("express-async-handler");
 const User = require("../models/userModel");
 const generateToken = require("../config/generateToken");
+const session = require("express-session");
+const RedisStore = require("connect-redis").default;
+const Redis = require("ioredis");
+const dotenv = require("dotenv");
+dotenv.config();
+// Initialize Redis client
+const redisClient = new Redis({
+  host: process.env.REDIS_HOST || "localhost",
+  port: 6379,
+});
 
 //@description     Get or Search all users
 //@route           GET /api/user?search=
 //@access          Public
 const allUsers = asyncHandler(async (req, res) => {
-  const keyword = req.query.search
-    ? {
-        $or: [
-          { name: { $regex: req.query.search, $options: "i" } },
-          { email: { $regex: req.query.search, $options: "i" } },
-        ],
-      }
-    : {};
+  const keyword = req.query.search ? req.query.search.toLowerCase() : "";
 
-  const users = await User.find(keyword).find({ _id: { $ne: req.user._id } });
-  res.send(users);
+  // Retrieve all keys for users
+  const userKeys = await redisClient.keys("user:*");
+
+  // Initialize an array to hold the matched users
+  const matchedUsers = [];
+
+  // Iterate through user keys and fetch their details
+  for (const key of userKeys) {
+    const user = await redisClient.hgetall(key); // Get user details as a hash
+
+    // Check if the user's name or email contains the search keyword
+    if (
+      (user.name && user.name.toLowerCase().includes(keyword)) ||
+      (user.email && user.email.toLowerCase().includes(keyword))
+    ) {
+      matchedUsers.push({
+        _id: key.split(":")[1], // Extract user ID from the key
+        name: user.name,
+        email: user.email,
+        // Include other fields as needed
+      });
+    }
+  }
+
+  // Filter out the current user
+  const result = matchedUsers.filter(
+    (user) => user._id !== req.user._id.toString()
+  );
+
+  res.send(result);
 });
 
 //@description     Register new user
@@ -27,7 +58,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
   if (!name || !email || !password) {
     res.status(400);
-    throw new Error("Please Enter all the Feilds");
+    throw new Error("Please Enter all the Fields");
   }
 
   const userExists = await User.findOne({ email });
@@ -45,6 +76,21 @@ const registerUser = asyncHandler(async (req, res) => {
   });
 
   if (user) {
+    // Store user details in Redis store
+    await redisClient.hset(`user:${user._id}`, {
+      name: user.name,
+      email: user.email,
+      isAdmin: user.isAdmin,
+      pic: user.pic,
+    });
+
+    // Optionally set expiration time for the cached data (e.g., 1 hour)
+    //await redisClient.expire(`user:${user._id}`, 3600);
+
+    // Create session for the user (if needed)
+    req.session.userId = user._id; // Store user ID in session
+    
+
     res.status(201).json({
       _id: user._id,
       name: user.name,

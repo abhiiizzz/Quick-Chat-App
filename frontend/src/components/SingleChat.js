@@ -64,7 +64,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
       setLoading(true);
 
       const { data } = await axios.get(
-       ` /api/message/${selectedChat._id}`,
+       `ap/api/message/${selectedChat._id}`,
         config
       );
       console.log(selectedChat._id,"chatid");
@@ -154,7 +154,7 @@ const sendMessage = async (event) => {
 
       setNewMessage("");
       const { data } = await axios.post(
-        "/api/message",
+        "ap/api/message",
         messageData,
         config
       );
@@ -281,7 +281,7 @@ const sendMessage = async (event) => {
   
       setNewMessage("");
       const { data } = await axios.post(
-        "/api/message",
+        "ap/api/message",
         messageData,
         config
       );

@@ -8,11 +8,43 @@ const { notFound, errorHandler } = require("./middleware/errorMiddleware");
 const colors = require("colors");
 const path = require("path");
 
+//const express = require('express');
+const session = require("express-session");
+const RedisStore = require("connect-redis").default;
+const Redis = require("ioredis");
+const asyncHandler = require("express-async-handler");
 dotenv.config();
+
 connectDB();
+// Initialize Redis client
+console.log("Connecting to Redis at host:", process.env.REDIS_HOST);
+const redisClient = new Redis({
+  host: process.env.REDIS_HOST || "localhost", // Use environment variable or fallback to localhost
+  port: 6379,
+});
+
+redisClient.on("error", (err) => {
+  console.error("Redis connection error:", err);
+});
+
+
+  
+redisClient.on("connect", () => {
+  console.log("Connected to Redis");
+});
+
 const app = express();
 
 app.use(express.json()); // to accept json data
+app.use(
+  session({
+    store: new RedisStore({ client: redisClient }),
+    secret: "yourSecretKey", // Change this to a strong secret
+    resave: false,
+    saveUninitialized: false,
+    cookie: { secure: true }, // Set to true if using HTTPS for secure passing of cookies
+  })
+);
 
 app.use("/api/user", userRoutes);
 app.use("/api/chat", chatRoutes);
@@ -59,13 +91,13 @@ io.on("connection", (socket) => {
 
   socket.on("typing", (room) => socket.in(room).emit("typing"));
   socket.on("stop typing", (room) => socket.in(room).emit("stop typing"));
-  socket.on("calling",(e)=>{
-    const olo={
-      id:e.id,
-      sel:e.sel
-    }
-    socket.in(e.lolo).emit("someCall",(olo))
-  })
+  socket.on("calling", (e) => {
+    const olo = {
+      id: e.id,
+      sel: e.sel,
+    };
+    socket.in(e.lolo).emit("someCall", olo);
+  });
   socket.on("new message", (newMessageRecieved) => {
     var chat = newMessageRecieved.chat;
 
@@ -91,6 +123,6 @@ io.on("connection", (socket) => {
       console.log("USER DISCONNECTED", socket.userId);
       io.emit("onlineUser", Array.from(onlineUsers));
       console.log(onlineUsers);
-    }
-  });
+    }
+  });
 });
