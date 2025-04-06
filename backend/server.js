@@ -19,7 +19,7 @@ connectDB();
 // Initialize Redis client
 console.log("Connecting to Redis at host:", process.env.REDIS_HOST);
 const redisClient = new Redis({
-  host: "redis", // Use environment variable or fallback to localhost
+  host: process.env.REDIS_HOST || "redis", // Use environment variable or fallback to localhost
   port: 6379,
 });
 

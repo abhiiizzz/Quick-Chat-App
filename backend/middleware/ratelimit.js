@@ -6,7 +6,7 @@ const RedisStore = require("connect-redis").default;
 dotenv.config();
 // Initialize Redis client
 const redisClient = new Redis({
-  host: process.env.REDIS_HOST || "localhost", // Use environment variable or fallback to localhost
+  host: process.env.REDIS_HOST || "redis", // Use environment variable or fallback to localhost
 
   port: 6379,
 });
