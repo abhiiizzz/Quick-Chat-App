@@ -25,7 +25,11 @@ const redisUrl = `redis://${redisHost}:${redisPort}`;
 
 console.log("Connecting to Redis at URL:", redisUrl);
 
-const redisClient = new Redis(redisUrl);
+const redisClient = new Redis(redisUrl,
+  {
+    legacyMode: true, 
+  }
+);
 
 
 redisClient.on("error", (err) => {
