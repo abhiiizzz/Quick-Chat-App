@@ -8,12 +8,12 @@ dotenv.config();
 const redisHost = process.env.REDIS_HOST || "redis";
 const redisPort = process.env.REDIS_PORT || 6379;
 
-console.log("Connecting to Redis at host:", redisHost);
+// Create a proper Redis connection string URL
+const redisUrl = `redis://${redisHost}:${redisPort}`;
 
-const redisClient = new Redis({
-  host: redisHost,
-  port: redisPort,
-});
+console.log("Connecting to Redis at URL:", redisUrl);
+
+const redisClient = new Redis(redisUrl);
 
 
 // Create rate limiter
