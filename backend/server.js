@@ -17,11 +17,16 @@ dotenv.config();
 
 connectDB();
 // Initialize Redis client
-console.log("Connecting to Redis at host:", process.env.REDIS_HOST);
+const redisHost = process.env.REDIS_HOST || "redis";
+const redisPort = process.env.REDIS_PORT || 6379;
+
+console.log("Connecting to Redis at host:", redisHost);
+
 const redisClient = new Redis({
-  host: process.env.REDIS_HOST || "redis", // Use environment variable or fallback to localhost
-  port: 6379,
+  host: redisHost,
+  port: redisPort,
 });
+
 
 redisClient.on("error", (err) => {
   console.error("Redis connection error:", err);

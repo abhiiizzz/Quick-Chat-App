@@ -5,11 +5,16 @@ const dotenv = require("dotenv");
 const RedisStore = require("connect-redis").default;
 dotenv.config();
 // Initialize Redis client
-const redisClient = new Redis({
-  host: process.env.REDIS_HOST || "redis", // Use environment variable or fallback to localhost
+const redisHost = process.env.REDIS_HOST || "redis";
+const redisPort = process.env.REDIS_PORT || 6379;
 
-  port: 6379,
+console.log("Connecting to Redis at host:", redisHost);
+
+const redisClient = new Redis({
+  host: redisHost,
+  port: redisPort,
 });
+
 
 // Create rate limiter
 const rateLimiter = new RateLimiterRedis({
