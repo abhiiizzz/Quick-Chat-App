@@ -23,7 +23,7 @@ const redisPort = process.env.REDIS_PORT || 6379;
 // Create a proper Redis connection string URL
 const redisUrl =
   process.env.REDIS_URL || `redis://${process.env.REDIS_HOST || "localhost"}:${process.env.REDIS_PORT || 6379}`;
-  
+
 console.log("Connecting to Redis at URL:", redisUrl);
 
 const redisClient = new Redis(redisUrl,
@@ -59,6 +59,9 @@ app.use(
 app.use("/api/user", userRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api/message", messageRoutes);
+app.get('/api/test', (req, res) => {
+  res.send('Hello from Railway!');
+});
 
 // Error Handling middlewares
 app.use(notFound);
