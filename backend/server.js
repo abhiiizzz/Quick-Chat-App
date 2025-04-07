@@ -22,16 +22,11 @@ const redisPort = process.env.REDIS_PORT || 6379;
 
 // Create a proper Redis connection string URL
 const redisUrl =
-  process.env.REDIS_URL || `redis://${process.env.REDIS_HOST || "localhost"}:${process.env.REDIS_PORT || 6379}`;
+  process.env.REDIS_URL || `redis://${process.env.REDIS_HOST || "redis"}:${process.env.REDIS_PORT || 6379}`;
 
 console.log("Connecting to Redis at URL:", redisUrl);
 
-const redisClient = new Redis(redisUrl,
-  {
-    legacyMode: true, 
-  }
-);
-
+const redisClient =new Redis(redisUrl);
 
 redisClient.on("error", (err) => {
   console.error("Redis connection error:", err);
@@ -63,6 +58,17 @@ app.get('/api/test', (req, res) => {
   res.send('Hello from Railway!');
 });
 
+const __dirname1 = path.resolve();
+if (process.env.NODE_ENV === "production") {
+app.use(express.static(path.join(__dirname1,"/frontend/build")));
+app.get('*', (req, res) => {
+  res. sendFile(path.resolve(__dirname1,"frontend","build","index.html")
+)})
+} else {
+app.get("/", (req, res) => {
+res.send("API is Running Successfully");
+});
+}
 // Error Handling middlewares
 app.use(notFound);
 app.use(errorHandler);
