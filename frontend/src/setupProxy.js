@@ -4,7 +4,7 @@ module.exports = function(app) {
     app.use(
         '/ap',
         createProxyMiddleware({
-            target: 'http://mern-backend:5000',
+            target: 'https://quick-chat-app-3.onrender.com/',
             changeOrigin: true,
         })
     );
