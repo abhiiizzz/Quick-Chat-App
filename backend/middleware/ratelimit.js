@@ -10,7 +10,7 @@ const redisPort = process.env.REDIS_PORT || 6379;
 
 // Create a proper Redis connection string URL
 const redisUrl =
-  process.env.REDIS_URL || `redis://${process.env.REDIS_HOST || "redis"}:${process.env.REDIS_PORT || 6379}`;
+"redis://red-cvqna2e3jp1c73dsnbb0:6379";
 console.log("Connecting to Redis at URL:", redisUrl);
 
 const redisClient = new Redis(redisUrl);
