@@ -52,7 +52,7 @@ const Signup = () => {
         },
       };
       const { data } = await axios.post(
-        "ap/api/user",
+        "https://quick-chat-app-3.onrender.com/api/user",
         {
           name,
           email,

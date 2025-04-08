@@ -13,6 +13,12 @@ const session = require("express-session");
 const RedisStore = require("connect-redis").default;
 const Redis = require("ioredis");
 const asyncHandler = require("express-async-handler");
+const cors = require("cors");
+
+app.use(cors({
+  origin: "https://quick-chat-app-frontend.onrender.com",
+ // credentials: true  if you're using cookies/auth
+}));
 dotenv.config();
 
 connectDB();
@@ -83,7 +89,7 @@ const server = app.listen(
 const io = require("socket.io")(server, {
   pingTimeout: 60000,
   cors: {
-    origin: "http://localhost:3000",
+    origin: "https://quick-chat-app-frontend.onrender.com",
     // credentials: true,
   },
 });
