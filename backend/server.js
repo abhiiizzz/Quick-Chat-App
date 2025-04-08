@@ -14,6 +14,7 @@ const RedisStore = require("connect-redis").default;
 const Redis = require("ioredis");
 const asyncHandler = require("express-async-handler");
 const cors = require("cors");
+const app = express();
 
 app.use(cors({
   origin: "https://quick-chat-app-frontend.onrender.com",
@@ -44,7 +45,6 @@ redisClient.on("connect", () => {
   console.log("Connected to Redis");
 });
 
-const app = express();
 
 app.use(express.json()); // to accept json data
 app.use(
