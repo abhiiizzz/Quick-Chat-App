@@ -13,15 +13,27 @@ const session = require("express-session");
 const RedisStore = require("connect-redis").default;
 const Redis = require("ioredis");
 const asyncHandler = require("express-async-handler");
+const cors = require("cors");
+const app = express();
+
+app.use(cors({
+  origin: "https://quick-chat-app-frontend.onrender.com",
+ // credentials: true  if you're using cookies/auth
+}));
 dotenv.config();
 
 connectDB();
 // Initialize Redis client
-console.log("Connecting to Redis at host:", process.env.REDIS_HOST);
-const redisClient = new Redis({
-  host: process.env.REDIS_HOST || "localhost", // Use environment variable or fallback to localhost
-  port: 6379,
-});
+const redisHost = process.env.REDIS_HOST || "redis";
+const redisPort = process.env.REDIS_PORT || 6379;
+
+// Create a proper Redis connection string URL
+const redisUrl =
+"redis://red-cvqna2e3jp1c73dsnbb0:6379";
+
+console.log("Connecting to Redis at URL:", redisUrl);
+
+const redisClient =new Redis(redisUrl);
 
 redisClient.on("error", (err) => {
   console.error("Redis connection error:", err);
@@ -33,7 +45,6 @@ redisClient.on("connect", () => {
   console.log("Connected to Redis");
 });
 
-const app = express();
 
 app.use(express.json()); // to accept json data
 app.use(
@@ -49,7 +60,21 @@ app.use(
 app.use("/api/user", userRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api/message", messageRoutes);
+app.get('/api/test', (req, res) => {
+  res.send('Hello from Railway!');
+});
 
+const __dirname1 = path.resolve();
+if (process.env.NODE_ENV === "production") {
+app.use(express.static(path.join(__dirname1,"/frontend/build")));
+app.get('*', (req, res) => {
+  res. sendFile(path.resolve(__dirname1,"frontend","build","index.html")
+)})
+} else {
+app.get("/", (req, res) => {
+res.send("API is Running Successfully");
+});
+}
 // Error Handling middlewares
 app.use(notFound);
 app.use(errorHandler);
@@ -64,7 +89,7 @@ const server = app.listen(
 const io = require("socket.io")(server, {
   pingTimeout: 60000,
   cors: {
-    origin: "http://localhost:3000",
+    origin: "https://quick-chat-app-frontend.onrender.com",
     // credentials: true,
   },
 });

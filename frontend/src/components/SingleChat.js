@@ -19,7 +19,7 @@ import io from "socket.io-client";
 import UpdateGroupChatModal from "./miscellaneous/UpdateGroupChatModal";
 import { ChatState } from "../Context/ChatProvider";
 import { NavLink } from "react-router-dom";
-const ENDPOINT = "http://localhost:5000"; // "https://talk-a-tive.herokuapp.com"; -> After deployment
+const ENDPOINT = "https://quick-chat-app-3.onrender.com"; // "https://talk-a-tive.herokuapp.com"; -> After deployment
 var socket, selectedChatCompare,lolo;
 
 const SingleChat = ({ fetchAgain, setFetchAgain }) => {
@@ -64,7 +64,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
       setLoading(true);
 
       const { data } = await axios.get(
-       `ap/api/message/${selectedChat._id}`,
+       `https://quick-chat-app-3.onrender.com/api/message/${selectedChat._id}`,
         config
       );
       console.log(selectedChat._id,"chatid");
@@ -154,7 +154,7 @@ const sendMessage = async (event) => {
 
       setNewMessage("");
       const { data } = await axios.post(
-        "ap/api/message",
+        "https://quick-chat-app-3.onrender.com/api/message",
         messageData,
         config
       );
@@ -281,7 +281,7 @@ const sendMessage = async (event) => {
   
       setNewMessage("");
       const { data } = await axios.post(
-        "ap/api/message",
+        "https://quick-chat-app-3.onrender.com/api/message",
         messageData,
         config
       );

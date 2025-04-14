@@ -7,10 +7,17 @@ const Redis = require("ioredis");
 const dotenv = require("dotenv");
 dotenv.config();
 // Initialize Redis client
-const redisClient = new Redis({
-  host: process.env.REDIS_HOST || "localhost",
-  port: 6379,
-});
+const redisHost = process.env.REDIS_HOST || "redis";
+const redisPort = process.env.REDIS_PORT || 6379;
+
+// Create a proper Redis connection string URL
+const redisUrl =
+"redis://red-cvqna2e3jp1c73dsnbb0:6379";
+  
+console.log("Connecting to Redis at URL:", redisUrl);
+
+const redisClient = new Redis(redisUrl);
+
 
 //@description     Get or Search all users
 //@route           GET /api/user?search=

@@ -41,7 +41,7 @@ const Login = () => {
       };
 
       const { data } = await axios.post(
-        "ap/api/user/login",
+        "https://quick-chat-app-3.onrender.com/api/user/login",
         { email, password },
         config
       );
